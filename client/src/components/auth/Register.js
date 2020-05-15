@@ -1,7 +1,11 @@
 import React, { Fragment, useState } from "react";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { setAlert } from "../../actions/alert";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Register = () => {
+const Register = ({ setAlert }) => {
   // set state hook and initialize fields
   const [formData, setFormData] = useState({
     name: "",
@@ -19,30 +23,10 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password !== password2) {
-      console.log("Passwords do not match");
+      // use the setAlert action to pass a message
+      setAlert("Passwords do not match", "danger");
     } else {
-      // console.log(formData);
-      const newUser = {
-        name,
-        email,
-        password,
-      };
-      try {
-        // create header for request
-        const config = {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        };
-        // convert newUser to valid json
-        const body = JSON.stringify(newUser);
-        // send using axios: path, body and config containing header
-        const res = await axios.post("/api/users", body, config);
-        // log the token that was received after registering a user
-        console.log(res.data);
-      } catch (err) {
-        console.error(err.response.setFormData);
-      }
+      console.log("Success");
     }
   };
 
@@ -99,10 +83,16 @@ const Register = () => {
         <input type="submit" className="btn btn-primary" value="Register" />
       </form>
       <p className="my-1">
-        Already have an account? <a href="login.html">Sign In</a>
+        Already have an account? <Link to="/login">Sign In</Link>
       </p>
     </Fragment>
   );
 };
 
-export default Register;
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired,
+};
+// when using redux we need to export using connect with this construct
+// 1st param is any state we need to pass, in this case none = null
+// 2nd param is the action = setAlert
+export default connect(null, { setAlert })(Register);
