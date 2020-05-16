@@ -2,10 +2,11 @@ import React, { Fragment, useState } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { setAlert } from "../../actions/alert";
-import { Link } from "react-router-dom";
+import { register } from "../../actions/auth";
+import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 
-const Register = ({ setAlert }) => {
+const Register = ({ setAlert, register, isAuthenticated }) => {
   // set state hook and initialize fields
   const [formData, setFormData] = useState({
     name: "",
@@ -26,9 +27,15 @@ const Register = ({ setAlert }) => {
       // use the setAlert action to pass a message
       setAlert("Passwords do not match", "danger");
     } else {
-      console.log("Success");
+      // pass to action which calls axios to access the backend
+      register({ name, email, password });
     }
   };
+
+  // Redirect if authenticated
+  if (isAuthenticated) {
+    return <Redirect to="/dashboard" />;
+  }
 
   return (
     <Fragment>
@@ -44,7 +51,7 @@ const Register = ({ setAlert }) => {
             name="name"
             value={name}
             onChange={(e) => onChange(e)}
-            required
+            // required
           />
         </div>
         <div className="form-group">
@@ -54,6 +61,7 @@ const Register = ({ setAlert }) => {
             name="email"
             value={email}
             onChange={(e) => onChange(e)}
+            // required
           />
           <small className="form-text">
             This site uses Gravatar so if you want a profile image, use a
@@ -67,7 +75,7 @@ const Register = ({ setAlert }) => {
             name="password"
             value={password}
             onChange={(e) => onChange(e)}
-            minLength="6"
+            // minLength="6"
           />
         </div>
         <div className="form-group">
@@ -77,7 +85,7 @@ const Register = ({ setAlert }) => {
             name="password2"
             value={password2}
             onChange={(e) => onChange(e)}
-            minLength="6"
+            // minLength="6"
           />
         </div>
         <input type="submit" className="btn btn-primary" value="Register" />
@@ -91,8 +99,16 @@ const Register = ({ setAlert }) => {
 
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
 };
+
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
+
 // when using redux we need to export using connect with this construct
 // 1st param is any state we need to pass, in this case none = null
 // 2nd param is the action = setAlert
-export default connect(null, { setAlert })(Register);
+
+export default connect(mapStateToProps, { setAlert, register })(Register);
