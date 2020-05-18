@@ -1,17 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getCurrentProfile } from "../../actions/profile";
-import { get } from "mongoose";
-const Dashboard = ({ getCurrentProfile, auth, profile }) => {
+import Spinner from "../layout/Spinner";
+
+const Dashboard = ({
+  getCurrentProfile,
+  auth: { user },
+  profile: { profile, loading },
+}) => {
   // call getCurrentProfile once on component load
   useEffect(() => {
     getCurrentProfile();
-  }, []);
-  return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
+  }, [getCurrentProfile]);
+  return loading && profile === null ? (
+    <Spinner />
+  ) : (
+    <Fragment>
+      <h1 className="large text-primary">Dashboard</h1>
+      <p className="lead">
+        <i className="fas fa-user"></i> Welcome {user && user.name}
+      </p>
+      {profile !== null ? (
+        <Fragment>has</Fragment>
+      ) : (
+        <Fragment>
+          <p>You have not yet setup a profile, please add some info</p>
+          <Link to="/create-profile" className="btn btn-primary m-1">
+            Create Profile
+          </Link>
+        </Fragment>
+      )}
+    </Fragment>
   );
 };
 
