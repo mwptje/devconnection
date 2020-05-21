@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { setAlert } from "../../actions/alert";
 import { register } from "../../actions/auth";
 import { Link, Redirect } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 
 const Register = ({ setAlert, register, isAuthenticated }) => {
   // set state hook and initialize fields
