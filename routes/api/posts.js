@@ -3,7 +3,6 @@ const router = express.Router();
 const { check, validationResult } = require("express-validator");
 // bring in the middleware
 const auth = require("../../middleware/auth");
-const checkObjectId = require("../../middleware/checkObjectId");
 
 const Post = require("../../models/Post");
 const User = require("../../models/User");
@@ -55,15 +54,13 @@ router.get("/", auth, async (req, res) => {
 // @route   GET api/posts/:post_id
 // @desc    Get post by id
 // @access  Private
-router.get("/:id", [auth, checkObjectId("id")], async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   try {
     // newest first
     const post = await Post.findById(req.params.id);
 
     if (!post) {
       return res.status(404).json({ msg: "Post not found" });
-    } else if (post.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: "User not authorized" });
     }
 
     res.json(post);
@@ -76,7 +73,7 @@ router.get("/:id", [auth, checkObjectId("id")], async (req, res) => {
 // @route   DELETE api/posts/:post_id
 // @desc    DELETE post by id
 // @access  Private
-router.delete("/:id", [auth, checkObjectId("id")], async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
     // newest first
     const post = await Post.findById(req.params.id);
